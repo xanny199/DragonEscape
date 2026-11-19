@@ -1,0 +1,20 @@
+<CodeBlock language="gitignore" editable>
+# Compiled programs
+*.exe
+*.o
+*.obj
+*.out
+
+Build files
+*.dll
+*.a
+*.pdb
+*.ilk
+
+Temporary files
+*.tmp
+*.log
+
+VS Code generated files
+.vscode/ipch/
+</CodeBlock>

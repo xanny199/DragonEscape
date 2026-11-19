@@ -1,0 +1,40 @@
+
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build DragonEscape",
+            "type": "shell",
+            "command": "C:\\msys64\\ucrt64\\bin\\gcc.exe",
+            "args": [
+                "-std=c11",
+                "-Wall",
+                "-Wextra",
+                "-g3",
+                "main.c",
+                "game.c",
+                "player.c",
+                "map.c",
+                "resource.c",
+                "inventory.c",
+                "shop.c",
+                "dragon.c",
+                "combat.c",
+                "timer.c",
+                "ui.c",
+                "-o",
+                "DragonEscape.exe"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
