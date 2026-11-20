@@ -32,3 +32,37 @@ void printPlayer(Player player) {
     printf("Equipped weapon: %d\n", player.equippedWeapon);
     printf("Equipped armor: %d\n", player.equippedArmor);
 }
+
+int getNextLevelXP(Player player) {
+    if (player.level >= MAX_LEVEL) {
+        return 0;
+    }
+
+    return player.level * XP_STEP;
+}
+
+void addExperience(Player *player, int amount) {
+    if (amount <= 0 || player->level >= MAX_LEVEL) {
+        return;
+    }
+
+    player->xp += amount;
+
+    int maxXP = (MAX_LEVEL - 1) * XP_STEP;
+
+    if (player->xp > maxXP) {
+        player->xp = maxXP;
+    }
+
+    while (player->level < MAX_LEVEL &&
+           player->xp >= getNextLevelXP(*player)) {
+
+        player->level++;
+
+        player->maxHp += 10;
+        player->hp = player->maxHp;
+
+        player->attack += 2;
+        player->defense += 1;
+    }
+}

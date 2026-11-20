@@ -21,15 +21,6 @@ void startGame(void) {
     Inventory inventory;
     initInventory(&inventory);
 
-
-    addItem(&inventory, SMALL_POTION);
-    addItem(&inventory, MEDIUM_POTION);
-    addItem(&inventory, LARGE_POTION);
-    addItem(&inventory, STRENGTH_POTION);
-    addItem(&inventory, DEFENSE_POTION);
-
-    player.hp = 60;
-
     srand((unsigned int)time(NULL));
 
     Location location = SHOP;
@@ -70,6 +61,15 @@ void startGame(void) {
                    player.hp, player.maxHp);
             printf("Gold: %d\n", player.gold);
             printInventory(inventory);
+
+            printf("Level: %d/%d\n", player.level, MAX_LEVEL);
+
+            if (player.level < MAX_LEVEL) {
+                printf("XP: %d/%d\n",
+                    player.xp, getNextLevelXP(player));
+            } else {
+                printf("XP: MAX\n");
+            }
 
             if (location == LAIR) {
                 printf("Dragon arrives in: %ds\n",
@@ -167,6 +167,10 @@ void startGame(void) {
 
                     if (type != NO_RESOURCE) {
                         addResource(&inventory, type);
+
+                        int experience = getResourceXP(type);
+                        addExperience(&player, experience);
+
                         lairMap[player.y][player.x] = '.';
                     }
                 }

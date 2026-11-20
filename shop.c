@@ -52,22 +52,18 @@ void sellResources(Player *player, Inventory *inventory) {
                 type = WOOD;
                 price = 2;
                 break;
-
             case '2':
                 type = STONE;
                 price = 3;
                 break;
-
             case '3':
                 type = IRON;
                 price = 5;
                 break;
-
             case '4':
                 type = CRYSTAL;
                 price = 10;
                 break;
-
             default:
                 continue;
         }
@@ -174,6 +170,200 @@ void buyItems(Player *player, Inventory *inventory) {
     }
 }
 
+static void sellItems(Player *player, Inventory *inventory) {
+    while (1) {
+        system("cls");
+
+        printf("=== SELL ITEMS ===\n\n");
+        printf("Gold: %d\n\n", player->gold);
+
+        printf("1. Weapons\n");
+        printf("2. Armor\n");
+        printf("3. Potions\n");
+        printf("0. Back\n");
+
+        char categoryChoice = _getch();
+        int startIndex;
+
+        switch (categoryChoice) {
+            case '1':
+                startIndex = WOODEN_SWORD;
+                break;
+            case '2':
+                startIndex = CLOTH_ARMOR;
+                break;
+            case '3':
+                startIndex = SMALL_POTION;
+                break;
+            case '0':
+                return;
+            default:
+                continue;
+        }
+
+        system("cls");
+        printf("=== SELL ITEMS ===\n\n");
+
+        for (int i = 0; i < 5; i++) {
+            ItemType type = (ItemType)(startIndex + i);
+            Item item = getItem(type);
+
+            printf("%d. %s - %d Gold (x%d)\n",
+                   i + 1,
+                   item.name,
+                   item.price / 2,
+                   inventory->items[type]);
+        }
+
+        printf("\n0. Back\n");
+        printf("Choose item: ");
+
+        char itemChoice = _getch();
+
+        if (itemChoice == '0') {
+            continue;
+        }
+
+        if (itemChoice < '1' || itemChoice > '5') {
+            continue;
+        }
+
+        ItemType type = (ItemType)(startIndex + itemChoice - '1');
+
+        if (inventory->items[type] <= 0) {
+            printf("\nYou do not have this item!\n");
+        } else {
+            Item item = getItem(type);
+            int sellPrice = item.price / 2;
+
+            inventory->items[type]--;
+            player->gold += sellPrice;
+
+            if (player->equippedWeapon == (int)type &&
+                inventory->items[type] == 0) {
+                player->equippedWeapon = -1;
+            }
+
+            if (player->equippedArmor == (int)type &&
+                inventory->items[type] == 0) {
+                player->equippedArmor = -1;
+            }
+
+            printf("\nSold: %s for %d Gold\n",
+                   item.name, sellPrice);
+        }
+
+        printf("Press any key to continue...");
+        _getch();
+    }
+}
+
+static void buyUpgrades(Player *player) {
+    while (1) {
+        system("cls");
+
+        printf("=== HERO UPGRADES ===\n\n");
+        printf("Gold: %d\n", player->gold);
+        printf("Level: %d/%d\n", player->level, MAX_LEVEL);
+        printf("HP: %d/%d\n", player->hp, player->maxHp);
+        printf("Attack: %d\n", getTotalAttack(*player));
+        printf("Defense: %d\n\n", getTotalDefense(*player));
+
+        printf("1. Next Level - %d Gold\n",
+               player->level * 30);
+        printf("2. +10 Max HP - 30 Gold\n");
+        printf("3. +2 Attack - 40 Gold\n");
+        printf("4. +1 Defense - 30 Gold\n");
+        printf("0. Back\n");
+
+        char choice = _getch();
+
+        if (choice == '0') {
+            return;
+        }
+
+        switch (choice) {
+            case '1':
+                if (player->level >= MAX_LEVEL) {
+                    printf("\nMaximum level reached!\n");
+                } else if (player->gold < player->level * 30) {
+                    printf("\nNot enough Gold!\n");
+                } else {
+                    int neededXP = getNextLevelXP(*player) - player->xp;
+
+                    player->gold -= player->level * 30;
+                    addExperience(player, neededXP);
+
+                    printf("\nLevel increased to %d!\n", player->level);
+                }
+                break;
+
+            case '2':
+                if (player->gold < 30) {
+                    printf("\nNot enough Gold!\n");
+                } else {
+                    player->gold -= 30;
+                    player->maxHp += 10;
+                    player->hp += 10;
+                    printf("\nMax HP increased!\n");
+                }
+                break;
+
+            case '3':
+                if (player->gold < 40) {
+                    printf("\nNot enough Gold!\n");
+                } else {
+                    player->gold -= 40;
+                    player->attack += 2;
+                    printf("\nAttack increased!\n");
+                }
+                break;
+
+            case '4':
+                if (player->gold < 30) {
+                    printf("\nNot enough Gold!\n");
+                } else {
+                    player->gold -= 30;
+                    player->defense += 1;
+                    printf("\nDefense increased!\n");
+                }
+                break;
+
+            default:
+                continue;
+        }
+
+        printf("Press any key to continue...");
+        _getch();
+    }
+}
+
+static void openSellMenu(Player *player, Inventory *inventory) {
+    while (1) {
+        system("cls");
+
+        printf("=== SELL MENU ===\n\n");
+        printf("1. Sell Resources\n");
+        printf("2. Sell Items\n");
+        printf("0. Back\n");
+
+        char choice = _getch();
+
+        switch (choice) {
+            case '1':
+                sellResources(player, inventory);
+                break;
+            case '2':
+                sellItems(player, inventory);
+                break;
+            case '0':
+                return;
+            default:
+                break;
+        }
+    }
+}
+
 void openShop(Player *player, Inventory *inventory) {
     char choice;
 
@@ -183,31 +373,35 @@ void openShop(Player *player, Inventory *inventory) {
         printf("=== MERCHANT ===\n\n");
 
         printf("Gold: %d\n", player->gold);
+        printf("Level: %d/%d\n", player->level, MAX_LEVEL);
 
         printInventory(*inventory);
 
         printf("\n");
 
-        printf("1. Buy items\n");
-        printf("2. Sell resources\n");
-        printf("3. Exit shop menu\n");
+        printf("1. Buy Items\n");
+        printf("2. Sell\n");
+        printf("3. Hero Upgrades\n");
+        printf("0. Exit\n");
 
         printf("\nChoose option: ");
 
         choice = _getch();
 
+        
         switch (choice) {
             case '1':
                 buyItems(player, inventory);
                 break;
 
             case '2':
-                sellResources(player, inventory);
+                openSellMenu(player, inventory);
                 break;
-
             case '3':
+                buyUpgrades(player);
+                break;
+            case '0':
                 return;
-
             default:
                 break;
         }

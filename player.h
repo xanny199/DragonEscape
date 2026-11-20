@@ -26,4 +26,7 @@ typedef struct {
 void initPlayer(Player *player);
 void printPlayer(Player player);
 
+void addExperience(Player *player, int amount);
+int getNextLevelXP(Player player);
+
 #endif

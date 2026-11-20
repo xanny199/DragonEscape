@@ -66,3 +66,22 @@ void generateResources(Player player) {
         lairMap[y][x] = symbols[i];
     }
 }
+
+int getResourceXP(ResourceType type) {
+    switch (type) {
+        case WOOD:
+            return 5;
+
+        case STONE:
+            return 7;
+
+        case IRON:
+            return 10;
+
+        case CRYSTAL:
+            return 15;
+
+        default:
+            return 0;
+    }
+}

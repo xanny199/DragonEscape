@@ -22,4 +22,6 @@ ResourceType getResourceType(char symbol);
 const char *getResourceName(ResourceType type);
 void generateResources(Player player);
 
+int getResourceXP(ResourceType type);
+
 #endif
