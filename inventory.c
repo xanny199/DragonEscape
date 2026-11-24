@@ -4,6 +4,10 @@
 
 #include "inventory.h"
 
+/**
+ * Vynuluje počty všetkých surovín a predmetov v inventári.
+ * @param inventory Ukazovateľ na inventár
+ */
 void initInventory(Inventory *inventory) {
     for (int i = 0; i < RESOURCE_COUNT; i++) {
         inventory->quantities[i] = 0;
@@ -14,18 +18,33 @@ void initInventory(Inventory *inventory) {
     }
 }
 
+/**
+ * Prida jeden kus suroviny, ak je jej typ platný
+ * @param inventory Ukazovateľ na inventár
+ * @param type Typ zbieranej suroviny
+ */
 void addResource(Inventory *inventory, ResourceType type) {
     if (type >= WOOD && type < NO_RESOURCE) {
         inventory->quantities[type]++;
     }
 }
 
+/**
+ * Pridá jeden kus predmetu, ak jeho typ patrí do platného rozsahu.
+ * @param inventory Ukazovateľ na inventár
+ * @param type Typ kupovaného alebo získaného predmetu
+ */
 void addItem(Inventory *inventory, ItemType type) {
     if (type >= WOODEN_SWORD && type < ITEM_COUNT) {
         inventory->items[type]++;
     }
 }
 
+/**
+ * Prevedie typ predmetu na textový názov vhodný na zobrazenie v menu
+ * @param type Typ predmetu
+ * @return Ukazovatel na názov predmetu alebo text Unnown Item
+ */
 const char *getItemName(ItemType type) {
     switch (type) {
         case WOODEN_SWORD: return "Wooden Sword";
@@ -50,6 +69,10 @@ const char *getItemName(ItemType type) {
     }
 }
 
+/**
+ * Vypíše počty surovín a predmetov do konzoly. Inventár sa odovzdáva hodnotou, preto sa pri vypisovaní nemení
+ * @param inventory Kópia inventára
+ */
 void printInventory(Inventory inventory) {
     printf("\n--- RESOURCES ---\n");
 
@@ -80,6 +103,11 @@ void printInventory(Inventory inventory) {
     printf("\n");
 }
 
+/**
+ * Vyhľadá nemenné údaje o predmete v internej tabuľke: typ, kategóriu, názov, cenu a hodnotu bonusu.
+ * @param type Typ požadovaného predmetu
+ * @return Štruktúru Item s údajmi predmetu
+ */
 Item getItem(ItemType type) {
     static const Item items[ITEM_COUNT] = {
         {WOODEN_SWORD, WEAPON, "Wooden Sword", 10, 5},
@@ -109,9 +137,16 @@ Item getItem(ItemType type) {
     return items[type];
 }
 
+/**
+ * Vybaví hráča vlastnenou zbraňou alebo brnením
+ * @param player Ukazovateľ na hráča
+ * @param inventory Inventár na overenie, či hráč predmet vlastní
+ * @param type Typ predmetu určeného na vybavenie
+ * @return 1 pri úspešnom vybavení, inak 0
+ */
 int equipItem(Player *player, Inventory *inventory,
              ItemType type) {
-    if (type < WOODEN_SWORD || type >+ ITEM_COUNT) {
+    if (type < WOODEN_SWORD || type >= ITEM_COUNT) {
         return 0;
     }
 
@@ -132,6 +167,14 @@ int equipItem(Player *player, Inventory *inventory,
     return 1;
 }
 
+/**
+ * Použije vlastnený elixir. Liečivý obnoví HP najviac po maximum; silový alebo obranný nastaví jednorazový bonus, ak ešte nie je aktívny. 
+ * Spotrebuje elixír iba pri úspechu
+ * @param player Ukazovateľ na hráča
+ * @param inventory Ukazovateľ na inventár
+ * @param type Typ elixíru
+ * @return 1 pri úspešnom použití, inak 0.
+ */
 int usePotion(Player *player, Inventory *inventory,
               ItemType type) {
 
@@ -184,6 +227,11 @@ int usePotion(Player *player, Inventory *inventory,
     return 1;
 }
 
+/**
+ * Vypočíta výsledný útok zo základného útoku, bonusu vybavenej zbrane a účinku elixíru
+ * @param player Kópia štruktúry hráča s údajmi o útoku a výbave
+ * @return Celkovú hodnotu útoku
+ */
 int getTotalAttack(Player player) {
     int attack = player.attack + player.potionAttackBonus;
 
@@ -195,6 +243,11 @@ int getTotalAttack(Player player) {
     return attack;
 }
 
+/**
+ * Vypočíta výslednú obranu zo základnej obrany, bonusu vybaveného brnenia a účinku elixíru
+ * @param player Kópia štruktúry hráča s údajmi o obrane a výbave
+ * @return Celkovú hodnotu obraný
+ */
 int getTotalDefense(Player player) {
     int defense = player.defense + player.potionDefenseBonus;
 
@@ -206,6 +259,13 @@ int getTotalDefense(Player player) {
     return defense;
 }
 
+/**
+ * Zobrazí vlastnené zbrane alebo brnenia danej kategórie a umožní hráčovi vybrať vybavený predmet
+ * Ide o pomocnú funkciu používanú len v tomto súbore.
+ * @param player Ukazovateľ na hráča
+ * @param inventory Ukazovateľ na inventár
+ * @param category Požadovaná kategória WEAPON alebo ARMOR
+ */
 static void chooseEquipment(Player *player,
                             Inventory *inventory,
                             ItemCategory category) {
@@ -266,6 +326,11 @@ static void chooseEquipment(Player *player,
     _getch();
 }
 
+/**
+ * Otvorí menu výbavy, zobrazí aktuálnu zbraň, brnenie a výsledné štatistiky a umožní zmeniť výbavu
+ * @param player Ukazovateľ na hráča
+ * @param inventory Ukazovateľ na inventár
+ */
 void openEquipmentMenu(Player *player, Inventory *inventory) {
     char choice;
 
@@ -312,6 +377,11 @@ void openEquipmentMenu(Player *player, Inventory *inventory) {
     }
 }
 
+/**
+ * Otvorí menu elixírov mimo boja. Umožní použiť vlastnený elixír a zobrazí informáciu o úspechu alebo dôvode odmietnutia.
+ * @param player Ukazovateľ na hráča
+ * @param inventory Ukazovateľ na inventár
+ */
 void openPotionMenu(Player *player, Inventory *inventory) {
     while (1) {
         system("cls");

@@ -31,6 +31,11 @@ char shopMap[SHOP_ROWS][SHOP_COLS + 1] = {
 };
 
 
+/**
+ * Vypíše obchod alebo dračí brloh do konzoly podľa aktuálnej lokácie
+ * @param player Kópia hráča s aktuálnymi súradnicami
+ * @param location Lokácia SHOP alebo LAIR, ktorá určuje mapu a jej rozmery
+ */
 void printMap(Player player, Location location) {
     int rows;
     int cols;
@@ -58,6 +63,13 @@ void printMap(Player player, Location location) {
 }
 
 
+/**
+ * Overí, či cieľové súradnice ležia v hraniciach zvolenej mapy a či cieľové políčko neobsahuje zakázanú prekážku
+ * @param location Lokácia
+ * @param x Cieľový stĺpec
+ * @param y Cieľový riadok
+ * @return 1, ak je pohyb podľa aktuálnej implementácie povolený, inak 0.
+ */
 int canMove(Location location, int x, int y) {
     int rows = location == LAIR ? MAP_ROWS : SHOP_ROWS;
     int cols = location == LAIR ? MAP_COLS : SHOP_COLS;
@@ -66,10 +78,10 @@ int canMove(Location location, int x, int y) {
         y < 0 || y >= rows) {
         return 0;
     }
-
-    if (location == LAIR) {
-        return lairMap[y][x] != '#';
-    }
     
+    if (location == LAIR) {
+        return lairMap[y][x] != '#' && lairMap[y][x] != 'D';
+    }
+
     return shopMap[y][x] != 'S' && shopMap[y][x] != '#';
 }

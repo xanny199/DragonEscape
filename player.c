@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include "player.h"
 
+/**
+ * Nastaví počiatočný stav hráča: pozíciu, životy, útok, obranu, úroveň, skúsenosti, zlato, výbavu a bonusy elixírov
+ * @param player Ukazovateľ na štruktúru hráča
+ */
 void initPlayer(Player *player) {
     player->x = 1;
     player->y = 1;
@@ -21,6 +25,10 @@ void initPlayer(Player *player) {
     player->potionDefenseBonus = 0;
 }
 
+/**
+ * Vypíše základné štatistiky hráča a číselné hodnoty vybavenej zbrane a brnenia
+ * @param player Kópia hráča
+ */
 void printPlayer(Player player) {
     printf("\n--- PLAYER STATS ---\n");
     printf("HP: %d/%d\n", player.hp, player.maxHp);
@@ -33,6 +41,11 @@ void printPlayer(Player player) {
     printf("Equipped armor: %d\n", player.equippedArmor);
 }
 
+/**
+ * Určí hranicu celkových skúseností potrebných na ďalšiu úroveň; na maximálnej úrovni vráti nulu
+ * @param player Kópia hráča
+ * @return Počet XP potrebných na dosiahnutie ďalšej úrovne
+ */
 int getNextLevelXP(Player player) {
     if (player.level >= MAX_LEVEL) {
         return 0;
@@ -41,6 +54,11 @@ int getNextLevelXP(Player player) {
     return player.level * XP_STEP;
 }
 
+/**
+ * Pridá hráčovi skúsenosti, obmedzí ich na maximum a pri dosiahnutí hranice zvýši úroveň
+ * @param player Ukazovateľ na hráča
+ * @param amount Počet pridávaných XP
+ */
 void addExperience(Player *player, int amount) {
     if (amount <= 0 || player->level >= MAX_LEVEL) {
         return;

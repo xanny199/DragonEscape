@@ -11,12 +11,23 @@
 #include "inventory.h"
 #include "shop.h"
 #include <time.h>
-    
+#include "dragon.h"
+#include "combat.h"
 
-
+/**
+ * Spustí jednu hernú partiu. 
+ * Inicializuje hráča, draka, inventár a mapu; v hlavnom cykle spracúva časovač, ovládanie, pohyb, zber surovín a následný súboj. 
+ * Po odchode alebo skončení súboja sa vráti do hlavného menu.
+ */
 void startGame(void) {
     Player player;
     initPlayer(&player);
+
+    Dragon dragon;
+    initDragon(&dragon);
+
+    clearResources();
+    lairMap[dragon.y][dragon.x] = '.';
 
     Inventory inventory;
     initInventory(&inventory);
@@ -39,14 +50,39 @@ void startGame(void) {
     while (1) {
         int remaining = -1;
 
-        if (location == LAIR) {
+        if (location == LAIR) {    
             remaining = getRemainingTime(&timer);
-
+            
             if (remaining == 0) {
+                clearResources();
+                spawnDragon(&dragon);
+
                 system("cls");
-                printf("DRAGON HAS AWAKENED!\n");
-                printf("The dragon attacks you!\n");
-                printf("Battle system coming soon.\n");
+
+                printf("=== DRAGON HAS AWAKENED ===\n\n");
+
+                printMap(player, LAIR);
+
+                printf("\nAll remaining resources have disappeared!\n");
+                printf("The dragon has entered the lair!\n");
+
+                printf("\nPress any key to continue...");
+                _getch();
+
+                int victory = fightDragon(&player, &dragon, &inventory);
+
+                system("cls");
+
+                if (victory) {
+                    printf("=== VICTORY ===\n\n");
+                    printf("You defeated the dragon!\n");
+                } else {
+                    printf("=== GAME OVER ===\n\n");
+                    printf("The dragon defeated you!\n");
+                }
+
+                printf("\nPress any key to continue...");
+                _getch();
                 return;
             }
         }
@@ -60,16 +96,15 @@ void startGame(void) {
             printf("\nHP: %d/%d\n",
                    player.hp, player.maxHp);
             printf("Gold: %d\n", player.gold);
-            printInventory(inventory);
-
             printf("Level: %d/%d\n", player.level, MAX_LEVEL);
-
             if (player.level < MAX_LEVEL) {
                 printf("XP: %d/%d\n",
                     player.xp, getNextLevelXP(player));
             } else {
                 printf("XP: MAX\n");
             }
+            
+            printInventory(inventory);
 
             if (location == LAIR) {
                 printf("Dragon arrives in: %ds\n",
@@ -184,21 +219,26 @@ void startGame(void) {
     }
 }
 
-void showMenu() {
+/**
+ * Opakovane zobrazuje hlavné menu. Voľba 1 spustí novú partiu, voľba 2 ukončí menu a ostatné klávesy oznámi ako neplatné.
+ */
+void showMenu(void) {
     char choice;
 
     while (1) {
-        printf("\n=== DRAGON ESCAPE ===\n");
+        system("cls");
+
+        printf("=== DRAGON ESCAPE ===\n\n");
         printf("1. New Game\n");
         printf("2. Exit\n");
-        printf("Choose option: ");
+        printf("\nChoose option: ");
 
         choice = _getch();
 
         switch (choice) {
             case '1':
                 startGame();
-                return;
+                break;
 
             case '2':
                 printf("\nGoodbye!\n");
@@ -206,6 +246,8 @@ void showMenu() {
 
             default:
                 printf("\nInvalid option!\n");
+                printf("Press any key...");
+                _getch();
                 break;
         }
     }

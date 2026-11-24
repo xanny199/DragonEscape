@@ -4,6 +4,11 @@
 
 #include "shop.h"
 
+/**
+ * Skontroluje, či hráč stojí presne jedno políčko vodorovne alebo zvisle od obchodníka
+ * @param player Kópia hráča
+ * @return 1, ak je hráč vedľa obchodníka, inak 0
+ */
 int isNearMerchant(Player player) {
     int merchantX = 3;
     int merchantY = 2;
@@ -14,6 +19,11 @@ int isNearMerchant(Player player) {
     return distanceX + distanceY == 1;
 }
 
+/**
+ * Zobrazí predaj surovín. Pri každom úspešnom predaji odpočíta jeden kus z inventára a pridá hráčovi príslušné zlato
+ * @param player Ukazovateľ na hráča
+ * @param inventory Ukazovateľ na inventár
+ */
 void sellResources(Player *player, Inventory *inventory) {
     char choice;
 
@@ -83,6 +93,11 @@ void sellResources(Player *player, Inventory *inventory) {
     }
 }
 
+/**
+ * Umožní kúpu zbrane, brnenia alebo elixíru. Skontroluje cenu, odpočíta zlato a pridá predmet do inventára
+ * @param player Ukazovateľ na hráča
+ * @param inventory Ukazovateľ na inventár
+ */
 void buyItems(Player *player, Inventory *inventory) {
     char choice;
 
@@ -170,6 +185,11 @@ void buyItems(Player *player, Inventory *inventory) {
     }
 }
 
+/**
+ * Umožní predať vlastnené predmety za polovicu ceny
+ * @param player Ukazovateľ na hráča
+ * @param inventory Ukazovateľ na inventár
+ */
 static void sellItems(Player *player, Inventory *inventory) {
     while (1) {
         system("cls");
@@ -258,6 +278,10 @@ static void sellItems(Player *player, Inventory *inventory) {
     }
 }
 
+/**
+ * Ponúka nákup ďalšej úrovne, maximálnych HP, útoku a obrany. Pred vykonaním vylepšenia kontroluje cenu a pri úrovni aj maximum
+ * @param player Ukazovateľ na hráca
+ */
 static void buyUpgrades(Player *player) {
     while (1) {
         system("cls");
@@ -338,11 +362,19 @@ static void buyUpgrades(Player *player) {
     }
 }
 
+/**
+ * Zobrazí inventár a podmenu predaja surovín alebo predmetov
+ * @param player Ukazovateľ na hráča
+ * @param inventory Ukazovateľ na inventá
+ */
 static void openSellMenu(Player *player, Inventory *inventory) {
     while (1) {
         system("cls");
 
         printf("=== SELL MENU ===\n\n");
+
+        printInventory(*inventory);
+
         printf("1. Sell Resources\n");
         printf("2. Sell Items\n");
         printf("0. Back\n");
@@ -364,6 +396,11 @@ static void openSellMenu(Player *player, Inventory *inventory) {
     }
 }
 
+/**
+ * Hlavné menu obchodníka. Umožní nákup predmetov, predaj alebo vylepšenie postavy
+ * @param player Ukazovateľ na hráča
+ * @param inventory Ukazovateľ na inventár
+ */
 void openShop(Player *player, Inventory *inventory) {
     char choice;
 

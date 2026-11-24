@@ -21,7 +21,6 @@
                 "dragon.c",
                 "combat.c",
                 "timer.c",
-                "ui.c",
                 "-o",
                 "DragonEscape.exe"
             ],

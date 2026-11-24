@@ -9,7 +9,6 @@ typedef enum {
     STONE,
     IRON,
     CRYSTAL,
-    DRAGON_SCALE,
     NO_RESOURCE
 } ResourceType;
 
@@ -23,5 +22,6 @@ const char *getResourceName(ResourceType type);
 void generateResources(Player player);
 
 int getResourceXP(ResourceType type);
+void clearResources(void);
 
 #endif

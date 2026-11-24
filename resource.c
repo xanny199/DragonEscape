@@ -3,6 +3,11 @@
 #include "resource.h"
 #include "map.h"
 
+/**
+ * Rozpozná surovinu podľa znaku mapy W, S, I alebo C
+ * @param symbol Znak načítaný z mapy
+ * @return Typ suroviny alebo NO_RESOURCE pri neznámom znaku
+ */
 ResourceType getResourceType(char symbol) {
     switch (symbol) {
         case 'W':
@@ -18,6 +23,11 @@ ResourceType getResourceType(char symbol) {
     }
 }
 
+/**
+ * Vráti textovy názov suroviny používaný pri vypisovaní inventára a predaji
+ * @param type Typ suroviny
+ * @return Ukazovateľ na názov suroviny alebo text Unknown
+ */
 const char *getResourceName(ResourceType type) {
     switch (type) {
         case WOOD:
@@ -28,13 +38,15 @@ const char *getResourceName(ResourceType type) {
             return "Iron";
         case CRYSTAL:
             return "Crystal";
-        case DRAGON_SCALE:
-            return "Dragon Scale";
         default:
             return "Unknown";
     }
 }
 
+/**
+ * Odstráni staré suroviny z brlohu a rozmiestni tri drevá, tri kamene, dve železá a jeden kryštál pomocou rand()
+ * @param player Kópia hráča
+ */
 void generateResources(Player player) {
     char symbols[] = {
         'W', 'W', 'W',
@@ -67,6 +79,11 @@ void generateResources(Player player) {
     }
 }
 
+/**
+ * Určí počet skúseností získaných za zdvihnutie konkrétnej suroviny
+ * @param type Typ zozbieranej suroviny
+ * @return 5 pre drevo, 7 pre kameň, 10 pre železo, 15 pre kryštál
+ */
 int getResourceXP(ResourceType type) {
     switch (type) {
         case WOOD:
@@ -83,5 +100,20 @@ int getResourceXP(ResourceType type) {
 
         default:
             return 0;
+    }
+}
+
+/**
+ * Prejde celú mapu brlohu a všetky znaky surovín nahradí bodkou
+ */
+void clearResources(void) {
+    for (int y = 0; y < MAP_ROWS; y++) {
+        for (int x = 0; x < MAP_COLS; x++) {
+            ResourceType type = getResourceType(lairMap[y][x]);
+
+            if (type != NO_RESOURCE) {
+                lairMap[y][x] = '.';
+            }
+        }
     }
 }

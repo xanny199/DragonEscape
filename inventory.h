@@ -4,7 +4,7 @@
 #include "resource.h"
 #include "player.h"
 
-#define RESOURCE_COUNT 5
+#define RESOURCE_COUNT 4
 
 typedef enum {
     WOODEN_SWORD,
